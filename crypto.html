@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chiffrement / Déchiffrement</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Chiffrement / Déchiffrement</h1>
+
+    <div>
+        <label>
+            <input type="radio" name="mode" value="encrypt" checked> Crypter
+        </label>
+        <label>
+            <input type="radio" name="mode" value="decrypt"> Décrypter
+        </label>
+    </div>
+
+    <textarea id="message" placeholder="Entrez votre message..." rows="5" cols="50"></textarea><br>
+
+    <input type="text" id="key" placeholder="Entrez votre clé secrète"><br>
+
+    <button onclick="process()">Lancer</button>
+
+    <h2>Résultat :</h2>
+    <pre id="output"></pre>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

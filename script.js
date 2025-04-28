@@ -25,10 +25,11 @@ function encrypt(message, key) {
         encrypted += String.fromCharCode(encryptedCharCode);
     }
 
-    return salt + encrypted;
+    return btoa(salt + encrypted);
 }
 
-function decrypt(ciphertext, key) {
+function decrypt(ciphertextBase64, key) {
+    const ciphertext = atob(ciphertextBase64);
     const saltLength = 8;
     const salt = ciphertext.slice(0, saltLength);
     const encryptedMessage = ciphertext.slice(saltLength);
@@ -43,35 +44,36 @@ function decrypt(ciphertext, key) {
     return decrypted;
 }
 
-const readline = require('readline');
+function process() {
+    const message = document.getElementById('message').value.trim();
+    const key = document.getElementById('key').value.trim();
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const output = document.getElementById('output');
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-rl.question('1=crypter, 2=décrypter : ', (choix) => {
-    if (choix === '1') {
-        rl.question('Entrez votre message : ', (message) => {
-            rl.question('Entrez votre clé secrète : ', (key) => {
-                console.time('Temps de chiffrement');
-                const encrypted = encrypt(message, key);
-                console.timeEnd('Temps de chiffrement');
-                console.log('\nMessage chiffré :', Buffer.from(encrypted, 'utf8').toString('base64'));
-                rl.close();
-            });
-        });
-    } else {
-        rl.question('Entrez votre message codé : ', (messagecodé) => {
-            rl.question('Entrez votre clé secrète : ', (key) => {
-                const encryptedBuffer = Buffer.from(messagecodé, 'base64');
-                const encryptedText = encryptedBuffer.toString('utf8');
-                console.time('Temps de déchiffrement');
-                const decrypted = decrypt(encryptedText, key);
-                console.timeEnd('Temps de déchiffrement');
-                console.log('Message déchiffré :', decrypted);
-                rl.close();
-            });
-        });
+    if (!message || !key) {
+        output.textContent = 'Veuillez entrer un message et une clé.';
+        return;
     }
+
+    console.time('Processing');
+    let result = '';
+    if (mode === 'encrypt') {
+        result = encrypt(message, key);
+    } else {
+        try {
+            result = decrypt(message, key);
+        } catch (e) {
+            result = 'Erreur : Message invalide ou mauvaise clé.';
+        }
+    }
+    console.timeEnd('Processing');
+    output.textContent = result;
+}
+
+document.querySelectorAll('input[name="mode"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+        document.getElementById('message').value = '';
+        document.getElementById('key').value = '';
+        document.getElementById('output').textContent = '';
+    });
 });
